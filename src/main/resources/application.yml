@@ -27,6 +27,12 @@ management:
     health:
       show-details: always
 
+
+gridstream:
+  grid:
+    rows: 10
+    cols: 10
+
 logging:
   level:
     root: INFO
