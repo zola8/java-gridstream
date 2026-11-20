@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: gridstream
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gridstream
+    username: gridstream
+    password: gridstream
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.example.gridstream: DEBUG
