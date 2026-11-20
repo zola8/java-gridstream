@@ -32,8 +32,12 @@ gridstream:
   grid:
     rows: 10
     cols: 10
+  simulation:
+    avatar-count: 3
+    tick-ms: 500
 
 logging:
   level:
     root: INFO
     com.example.gridstream: DEBUG
+    org.apache.kafka: WARN
