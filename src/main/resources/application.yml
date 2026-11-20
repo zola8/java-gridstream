@@ -18,6 +18,11 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
 
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema.sql
+
 management:
   endpoints:
     web:
@@ -41,3 +46,4 @@ logging:
     root: INFO
     com.example.gridstream: DEBUG
     org.apache.kafka: WARN
+
