@@ -1,8 +1,11 @@
 package com.example.gridstream.consumer;
 
 import com.example.gridstream.config.KafkaTopicsConfig;
+import com.example.gridstream.domain.AvatarPos;
 import com.example.gridstream.domain.GridProperties;
+import com.example.gridstream.domain.GridSnapshot;
 import com.example.gridstream.domain.PositionUpdate;
+import com.example.gridstream.service.SnapshotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -10,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,10 +23,12 @@ public class AsciiRenderer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AsciiRenderer.class);
 
     private final GridProperties gridProperties;
+    private final SnapshotService snapshotService;
     private final Map<String, PositionUpdate> currentPositions = new ConcurrentHashMap<>();
 
-    public AsciiRenderer(GridProperties gridProperties) {
+    public AsciiRenderer(GridProperties gridProperties, SnapshotService snapshotService) {
         this.gridProperties = gridProperties;
+        this.snapshotService = snapshotService;
         LOGGER.info("AsciiRenderer initialized - consumer group=gridstream-renderer");
     }
 
@@ -70,6 +76,13 @@ public class AsciiRenderer {
         sb.append("\n   +");
         sb.append("-".repeat(cols));
         sb.append("+");
-        LOGGER.info("ASCII grid (latest tick={}):\n{}", latestTick, sb);
+//        LOGGER.info("ASCII grid (latest tick={}):\n{}", latestTick, sb);
+
+        List<AvatarPos> avatarPositions = currentPositions.values().stream()
+            .map(p -> new AvatarPos(p.avatarId(), p.x(), p.y()))
+            .toList();
+        GridSnapshot snapshot = new GridSnapshot(latestTick, avatarPositions, rows, cols);
+        snapshotService.push(snapshot);
     }
+
 }

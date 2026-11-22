@@ -35,12 +35,13 @@ public class GridStreamApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onReady() {
-        LOGGER.info("GridStream Step 4 ready - producer + persist consumer + ASCII renderer running");
+        LOGGER.info("GridStream Step 5 ready - producer + consumers + SSE browser display running");
         LOGGER.info("Grid dimensions: {} rows x {} cols", gridProperties.rows(), gridProperties.cols());
         LOGGER.info("Simulation: avatarCount={}, tickMs={}",
             simulationProperties.avatarCount(), simulationProperties.tickMs());
         LOGGER.info("Kafka topic: {}", KafkaTopicsConfig.GRID_POSITIONS_TOPIC);
-        LOGGER.info("Watch the ASCII grid render every {} ms in the logs above", simulationProperties.tickMs());
+        LOGGER.info("Open browser: http://localhost:8080/");
+        LOGGER.info("SSE stream:   http://localhost:8080/stream");
         LOGGER.info("Verify avatar_state:  docker exec -it gridstream-postgres psql -U gridstream -d gridstream -c \"SELECT * FROM avatar_state\"");
         LOGGER.info("Verify history count: docker exec -it gridstream-postgres psql -U gridstream -d gridstream -c \"SELECT COUNT(*) FROM position_history\"");
     }

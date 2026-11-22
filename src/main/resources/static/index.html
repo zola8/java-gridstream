@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GridStream</title>
+    <style>
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            margin: 24px;
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+        h1 {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #c0c0c0;
+        }
+        .subtitle {
+            font-size: 0.8em;
+            color: #707070;
+            margin-bottom: 20px;
+        }
+        #grid {
+            border-collapse: collapse;
+        }
+        #grid td {
+            width: 32px;
+            height: 32px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            border: 1px solid #2a2a3e;
+            background: #16213e;
+            transition: background-color 0.15s ease;
+        }
+        .avatar-1 { background: #27ae60 !important; color: white; }
+        .avatar-2 { background: #2980b9 !important; color: white; }
+        .avatar-3 { background: #c0392b !important; color: white; }
+        .avatar-4 { background: #8e44ad !important; color: white; }
+        .avatar-5 { background: #d35400 !important; color: white; }
+        .avatar-6 { background: #16a085 !important; color: white; }
+        .avatar-7 { background: #f39c12 !important; color: white; }
+        .avatar-8 { background: #2c3e50 !important; color: white; }
+        .avatar-9 { background: #e74c3c !important; color: white; }
+        #status {
+            margin-top: 16px;
+            font-size: 0.85em;
+            color: #888;
+        }
+        .connected { color: #27ae60; }
+        .disconnected { color: #c0392b; }
+    </style>
+</head>
+<body>
+<h1>GridStream &mdash; live grid</h1>
+<div class="subtitle">Spring Boot + Kafka + Postgres &middot; SSE stream</div>
+<table id="grid"></table>
+<div id="status">connecting...</div>
+
+<script>
+    const ROWS = 10, COLS = 10;
+    const grid = document.getElementById('grid');
+    const status = document.getElementById('status');
+
+    for (let y = 0; y < ROWS; y++) {
+        const tr = document.createElement('tr');
+        for (let x = 0; x < COLS; x++) {
+            const td = document.createElement('td');
+            td.className = 'empty';
+            tr.appendChild(td);
+        }
+        grid.appendChild(tr);
+    }
+
+    function clearGrid() {
+        for (const row of grid.rows) {
+            for (const cell of row.cells) {
+                cell.textContent = '';
+                cell.className = 'empty';
+            }
+        }
+    }
+
+    function renderSnapshot(snapshot) {
+        clearGrid();
+        for (const av of snapshot.avatars) {
+            if (av.y >= 0 && av.y < ROWS && av.x >= 0 && av.x < COLS) {
+                const cell = grid.rows[av.y].cells[av.x];
+                const marker = av.avatarId.charAt(av.avatarId.length - 1);
+                cell.textContent = marker;
+                cell.className = 'avatar-' + marker;
+            }
+        }
+        status.textContent = 'tick ' + snapshot.tick + ' \u2014 ' + snapshot.avatars.length + ' avatars \u2014 ' + new Date().toLocaleTimeString();
+    }
+
+    const eventSource = new EventSource('/stream');
+    eventSource.addEventListener('snapshot', function(e) {
+        const snapshot = JSON.parse(e.data);
+        renderSnapshot(snapshot);
+    });
+    eventSource.onopen = function() {
+        status.className = 'connected';
+        status.textContent = 'connected \u2014 waiting for snapshots...';
+    };
+    eventSource.onerror = function() {
+        status.className = 'disconnected';
+        status.textContent = 'connection lost \u2014 retrying...';
+    };
+</script>
+</body>
+</html>
