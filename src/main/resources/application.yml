@@ -39,7 +39,7 @@ gridstream:
     cols: 10
   simulation:
     avatar-count: 3
-    tick-ms: 2000
+    tick-ms: 1000
 
 logging:
   level:
