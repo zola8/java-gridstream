@@ -49,7 +49,7 @@ public class AvatarSimulator {
             avatars.size(), gridProperties.cols(), gridProperties.rows(), simulationProperties.tickMs());
     }
 
-    @Scheduled(fixedDelayString = "${gridstream.simulation.tick-ms:500}")
+    @Scheduled(fixedDelayString = "${gridstream.simulation.tick-ms:2000}")
     public void tick() {
         tick++;
         for (Avatar avatar : avatars) {

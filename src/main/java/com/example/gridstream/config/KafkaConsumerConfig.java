@@ -19,16 +19,16 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerConfig.class);
 
     @Bean
     public ConsumerFactory<String, PositionUpdate> consumerFactory(
         @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers) {
         Map<String, Object> config = new HashMap<>();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "gridstream-persist");
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, "gridstream-persist");       // factory default
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        log.info("Kafka consumer configured: bootstrapServers={}, groupId=gridstream-persist, valueDeserializer=JacksonJsonDeserializer (Jackson 3.x)",
+        LOGGER.info("Kafka consumer configured: bootstrapServers={}, groupId=gridstream-persist, valueDeserializer=JacksonJsonDeserializer (Jackson 3.x)",
             bootstrapServers);
         return new DefaultKafkaConsumerFactory<>(
             config,
